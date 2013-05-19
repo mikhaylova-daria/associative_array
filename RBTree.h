@@ -36,12 +36,13 @@ private:
     void * RB_DELETE (Node *);
     void RB_DELETE_FIXUP (Node *);
     void TreeWalk(Node*);
-    void * TreeSuccessor(Node *);
-    void * TreePredecessor(Node *);
-    void * TreeMinimum (Node * x);
-    void * TreeMaximum (Node *x);
-    void * TreeSearch (Node * x , T key);
+    typename RBtree<T, U>::Node * TreeSuccessor(Node *);
+    typename RBtree<T, U>::Node * TreePredecessor(Node *);
+    typename RBtree<T, U>::Node * TreeMinimum (Node * x);
+    typename RBtree<T, U>::Node * TreeMaximum (Node *x);
+    typename RBtree<T, U>::Node * TreeSearch (Node * x , T key);
 public:
+    class iterator;
     RBtree() {
         NIL.left = &NIL;
         NIL.right = &NIL;
@@ -63,6 +64,8 @@ public:
 
     void insert(std::pair<T, U> _pair);
     void erase (T key);
+    RBtree <T, U>::iterator begin();
+    RBtree <T, U>::iterator end();
     bool has_key (T key);
     void print ();
     T min_key(){
@@ -71,6 +74,8 @@ public:
     T max_key(){
         return ((Node*)(this->TreeMaximum(root)))->key;
     }
+
+
 };
 
 template <typename T, typename U>
@@ -325,7 +330,7 @@ template <typename T , typename U>
 
 
 template <typename T , typename U>
-    void* RBtree<T, U>::TreeSuccessor(Node * x) {
+     typename RBtree<T, U>::Node* RBtree<T, U>::TreeSuccessor(Node * x) {
         if (!(x->right->is_NIL(this))) {
             return TreeMinimum(x->right);
         }
@@ -334,11 +339,11 @@ template <typename T , typename U>
             x = y;
             y = y->parent;
         }
-        return (void*)y;
+        return y;
     }
 
 template <typename T , typename U>
-   void * RBtree<T, U>::TreePredecessor(RBtree<T, U>::Node * x) {
+   typename RBtree<T, U>::Node * RBtree<T, U>::TreePredecessor(RBtree<T, U>::Node * x) {
         if (!(x->left->is_NIL(this))) {
             return TreeMaximum(x->left);
         }
@@ -347,27 +352,27 @@ template <typename T , typename U>
             x = y;
             y = y->parent;
         }
-        return (void*)y;
+        return y;
     }
 
 template <typename T, typename U >
-    void* RBtree<T, U>::TreeMinimum (RBtree<T, U>::Node * x) {
+    typename RBtree<T, U>::Node* RBtree<T, U>::TreeMinimum (RBtree<T, U>::Node * x) {
         while (!(x->left->is_NIL(this))) {
             x = x->left;
         }
-        return (void *)x;
+        return x;
     }
 
 template <typename T , typename U>
-    void * RBtree<T, U>::TreeMaximum (RBtree<T, U>::Node *x) {
+    typename RBtree<T, U>::Node * RBtree<T, U>::TreeMaximum (RBtree<T, U>::Node *x) {
         while (!(x->right->is_NIL(this))) {
                x = x->right;
         }
-        return (void *)x;
+        return x;
     }
 
 template <typename T , typename U>
-    void * RBtree<T, U>::TreeSearch (RBtree<T, U>::Node * x, T key){
+     typename RBtree<T, U>::Node * RBtree<T, U>::TreeSearch (RBtree<T, U>::Node * x, T key){
         while  (!(x->is_NIL(this)) && key != (x->key)) {
             if (key < x->key) {
                    x = x->left;
@@ -375,7 +380,7 @@ template <typename T , typename U>
                 x = x->right;
             }
         }
-        return (void *)x;
+        return x;
     }
 
 
@@ -388,7 +393,60 @@ template <typename T , typename U>
          }
      }
 
+template <typename T , typename U>
+     typename RBtree<T,U>::iterator RBtree<T,U>::begin()
+     {
+         RBtree<T, U>::Node * current = this->TreeMinimum(this->root);
+         iterator it(current, this);
+         return it;
+     }
 
+
+template <typename T , typename U>
+    typename  RBtree<T,U>::iterator RBtree<T,U>::end()
+     {
+
+         iterator it(&(this->NIL) , this);
+         return it;
+     }
+
+
+template <typename T, typename U>
+     class RBtree<T, U>::iterator{
+         RBtree<T, U> *tree;
+         RBtree<T, U>::Node * current;
+
+     public:
+         iterator (RBtree<T, U>::Node *_current = 0, RBtree<T, U> *_tree  = 0):current(_current), tree(_tree){}
+         bool operator !=(const iterator & other)
+         {
+             return (current != other.current || tree != other.tree);
+         }
+         bool operator ==(const iterator & other)
+         {
+             return (current == other.current && tree == other.tree);
+         }
+         iterator & operator++(){
+         {
+                current = tree->TreeSuccessor(current);
+                if (current->is_NIL(tree)){
+                    iterator itr(&(tree->NIL), tree);
+                    return itr;
+                } else {
+                    iterator itr(current, tree);
+                    return itr;
+                }
+
+          }
+        }
+
+         std::pair<T, U> operator*(){
+             std::pair<T, U> answer;
+             answer.first = current->key;
+             answer.second = current->value;
+             return answer;
+         }
+     };
 
 
 
