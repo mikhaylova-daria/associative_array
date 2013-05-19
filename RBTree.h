@@ -43,6 +43,7 @@ private:
     typename RBtree<T, U, Compare>::Node * TreeMinimum (Node * x);
     typename RBtree<T, U, Compare>::Node * TreeMaximum (Node *x);
     typename RBtree<T, U, Compare>::Node * TreeSearch (Node * x , T key);
+    std::pair <RBtree<T, U, Compare>::Node*, bool> has_key (T key);
 public:
     class iterator;
     RBtree() {
@@ -69,9 +70,12 @@ public:
     void erase (T key);
     RBtree <T, U, Compare >::iterator begin();
     RBtree <T, U, Compare>::iterator end();
-    std::pair <RBtree<T, U, Compare>::Node*, bool> has_key (T key);
+    RBtree <T, U, Compare>::iterator find(const T & _key);
+    void erase (iterator itr);
+
 };
 
+// INSERT 1
 template <typename T, typename U, typename Compare>
   void RBtree<T, U, Compare>::insert (RBtree<T, U, Compare>::iterator first, RBtree<T, U, Compare>::iterator last){
       for (;first != last; ++first){
@@ -80,6 +84,7 @@ template <typename T, typename U, typename Compare>
       return;
   }
 
+//INSERT 2
 template <typename T, typename U, typename Compare>
      pair<typename RBtree<T, U, Compare>::iterator, bool>  RBtree<T, U, Compare>::insert(std::pair<T, U> _pair){
         Node * node = new Node(_pair.first, _pair.second);
@@ -96,14 +101,34 @@ template <typename T, typename U, typename Compare>
         }
     }
 
+//FIND
+template <typename T, typename U, typename Compare>
+     typename RBtree<T, U, Compare>::iterator RBtree<T, U, Compare>::find(const T & _key){
+          Node * key =  (this->TreeSearch(root, _key));
+          iterator itr(key, this);
+          return itr;
+     }
+
+
+//ERASE(KEY)
 template <typename T, typename U, typename Compare>
     void RBtree<T, U, Compare>::erase (T _key){
-        Node * key = (Node*) (this->TreeSearch(root, _key));
+        Node * key =  this->TreeSearch(root, _key);
         if (key ->is_NIL(this)) return;
         this->RB_DELETE(key);
         delete (key);
         return;
     }
+
+//ERASE(ITERATOR)
+    template <typename T, typename U, typename Compare>
+        void RBtree<T, U, Compare>::erase (iterator itr){
+            if (itr.current->is_NIL(this)) return;
+            this->RB_DELETE(itr.current);
+            delete (itr.current);
+            return;
+        }
+
 
 template <typename T, typename U, typename Compare>
     pair <typename RBtree<T, U, Compare>::Node*, bool> RBtree<T, U, Compare>::has_key (T _key){
@@ -423,6 +448,7 @@ template <typename T, typename U, typename Compare>
          RBtree<T, U, Compare>::Node * current;
 
      public:
+         friend class RBtree<T, U, Compare>;
          iterator (RBtree<T, U, Compare>::Node *_current = 0, RBtree<T, U, Compare> *_tree  = 0):current(_current), tree(_tree){}
          bool operator !=(const iterator & other)
          {

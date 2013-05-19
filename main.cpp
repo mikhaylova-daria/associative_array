@@ -21,11 +21,18 @@ int main()
     A.insert(std::pair<int, int>(44 ,2));
     A.insert(std::pair<int, int>(31 ,2));
     A.insert(B.begin(), B.end());
-   // A.print();
     RBtree<int, int, greater<int> >::iterator itr;
     itr = A.begin();
     for (; itr!= A.end(); ++itr) {
         cout<<(*itr).first<<" "<<(*itr).second<<'\n';
+
+    }
+    cout <<"\n";
+    A.erase(A.begin());
+
+    for (itr = A.begin(); itr!= A.end(); ++itr) {
+        cout<<(*itr).first<<" "<<(*itr).second<<'\n';
+
     }
     //A.erase(1);
    // A.print();
