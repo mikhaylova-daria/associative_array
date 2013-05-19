@@ -65,11 +65,20 @@ public:
       }
 
     pair<typename RBtree<T, U, Compare>::iterator, bool> insert(std::pair<T, U> _pair);
+    void insert (RBtree<T, U, Compare>::iterator first, RBtree<T, U, Compare>::iterator last);
     void erase (T key);
     RBtree <T, U, Compare >::iterator begin();
     RBtree <T, U, Compare>::iterator end();
     std::pair <RBtree<T, U, Compare>::Node*, bool> has_key (T key);
 };
+
+template <typename T, typename U, typename Compare>
+  void RBtree<T, U, Compare>::insert (RBtree<T, U, Compare>::iterator first, RBtree<T, U, Compare>::iterator last){
+      for (;first != last; ++first){
+          insert((*first));
+      }
+      return;
+  }
 
 template <typename T, typename U, typename Compare>
      pair<typename RBtree<T, U, Compare>::iterator, bool>  RBtree<T, U, Compare>::insert(std::pair<T, U> _pair){
