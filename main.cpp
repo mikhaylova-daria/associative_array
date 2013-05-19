@@ -30,10 +30,32 @@ int main()
     cout <<"\n";
     A.erase(A.begin());
 
+
+
+    itr = A.begin();
+    (*itr).second = 6;// изменит значение
+
     for (itr = A.begin(); itr!= A.end(); ++itr) {
         cout<<(*itr).first<<" "<<(*itr).second<<'\n';
+    }
+
+    RBtree<int, int, greater<int> >::const_iterator itr1;
+    itr1 = A.cbegin();
+    for (; itr1!= A.cend(); ++itr1) {
+        cout<<(*itr1).first<<" "<<(*itr1).second<<'\n';
 
     }
+    cout <<"\n";
+
+    cout<<'\n';
+
+    itr1 = A.cbegin();
+   // (*itr1).second = 6; //даст ошибку компиляции, как и положено
+
+    for (itr1 = A.cbegin(); itr1 != A.cend(); ++itr1) {
+        cout<<(*itr1).first<<" "<<(*itr1).second<<'\n';
+    }
+
     //A.erase(1);
    // A.print();
     //int c;

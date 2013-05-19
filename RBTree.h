@@ -46,6 +46,7 @@ private:
     std::pair <RBtree<T, U, Compare>::Node*, bool> has_key (T key);
 public:
     class iterator;
+    class const_iterator;
     RBtree() {
         NIL.left = &NIL;
         NIL.right = &NIL;
@@ -70,6 +71,8 @@ public:
     void erase (T key);
     RBtree <T, U, Compare >::iterator begin();
     RBtree <T, U, Compare>::iterator end();
+    RBtree <T, U, Compare >::const_iterator cbegin();
+    RBtree <T, U, Compare>::const_iterator cend() ;
     RBtree <T, U, Compare>::iterator find(const T & _key);
     void erase (iterator itr);
 
@@ -441,6 +444,22 @@ template <typename T , typename U, typename Compare>
          return it;
      }
 
+     template <typename T , typename U, typename Compare>
+          typename RBtree<T,U, Compare>::const_iterator RBtree<T,U, Compare>::cbegin()
+          {
+              RBtree<T, U, Compare>::Node * current = this->TreeMinimum(this->root);
+              const_iterator it(current, this);
+              return it;
+          }
+
+
+     template <typename T , typename U, typename Compare>
+         typename  RBtree<T,U, Compare>::const_iterator RBtree<T,U, Compare>::cend()
+          {
+
+              const_iterator it(&(this->NIL) , this);
+              return it;
+          }
 
 template <typename T, typename U, typename Compare>
      class RBtree<T, U, Compare>::iterator{
@@ -472,15 +491,52 @@ template <typename T, typename U, typename Compare>
           }
         }
 
-         std::pair<T, U> operator*(){
-             std::pair<T, U> answer;
-             answer.first = current->key;
-             answer.second = current->value;
+
+         std::pair<const T, U&>  operator*(){
+             std::pair<T, U&> answer(current->key, current->value);
              return answer;
          }
+
+
      };
 
+     template <typename T, typename U, typename Compare>
+          class RBtree<T, U, Compare>::const_iterator{
+              RBtree<T, U, Compare> *tree;
+              RBtree<T, U, Compare>::Node * current;
 
+          public:
+              friend class RBtree<T, U, Compare>;
+              const_iterator (RBtree<T, U, Compare>::Node *_current = 0, RBtree<T, U, Compare> *_tree  = 0):current(_current), tree(_tree){}
+              bool operator !=(const const_iterator & other)
+              {
+                  return (current != other.current || tree != other.tree);
+              }
+              bool operator ==(const const_iterator & other)
+              {
+                  return (current == other.current && tree == other.tree);
+              }
+              const_iterator & operator++(){
+              {
+                     current = tree->TreeSuccessor(current);
+                     if (current->is_NIL(tree)){
+                         const_iterator itr(&(tree->NIL), tree);
+                         return itr;
+                     } else {
+                         const_iterator itr(current, tree);
+                         return itr;
+                     }
+
+               }
+             }
+
+              const std::pair<const T, const U> operator*(){
+                  std::pair<T, U> answer;
+                  answer.first = current->key;
+                  answer.second = current->value;
+                  return answer;
+              }
+          };
 
 
 #endif // RBTREE_H
