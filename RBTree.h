@@ -1,6 +1,7 @@
 #ifndef RBTREE_H
 #define RBTREE_H
 #include <algorithm>
+using namespace std;
 template <typename T, typename U, typename Compare = std::less<T> >
 class RBtree
 {
@@ -63,27 +64,27 @@ public:
         }
       }
 
-    void insert(std::pair<T, U> _pair);
+    pair<typename RBtree<T, U, Compare>::iterator, bool> insert(std::pair<T, U> _pair);
     void erase (T key);
     RBtree <T, U, Compare >::iterator begin();
     RBtree <T, U, Compare>::iterator end();
-    bool has_key (T key);
-    void print ();
-    T min_key(){
-        return (this->TreeMinimum(root))->key;
-    }
-    T max_key(){
-        return (this->TreeMaximum(root))->key;
-    }
-
-
+    std::pair <RBtree<T, U, Compare>::Node*, bool> has_key (T key);
 };
 
 template <typename T, typename U, typename Compare>
-    void RBtree<T, U, Compare>::insert(std::pair<T, U> _pair){
+     pair<typename RBtree<T, U, Compare>::iterator, bool>  RBtree<T, U, Compare>::insert(std::pair<T, U> _pair){
         Node * node = new Node(_pair.first, _pair.second);
-        this->RB_INSERT(node);
-        return;
+        Node * key = (this->TreeSearch(root, _pair.first));
+        if (key ->is_NIL(this)) {
+            this->RB_INSERT(node);
+            iterator itr(node, this);
+            std::pair<typename RBtree<T, U, Compare>::iterator, bool>  answer(itr, true);
+            return answer;
+        } else {
+            iterator itr(key, this);
+            std::pair<typename RBtree<T, U, Compare>::iterator, bool>  answer(itr, false);
+            return answer;
+        }
     }
 
 template <typename T, typename U, typename Compare>
@@ -96,16 +97,11 @@ template <typename T, typename U, typename Compare>
     }
 
 template <typename T, typename U, typename Compare>
-    bool RBtree<T, U, Compare>::has_key (T _key){
-        Node * key = (Node*)(this->TreeSearch(root, _key));
-        return (!(key->is_NIL()));
+    pair <typename RBtree<T, U, Compare>::Node*, bool> RBtree<T, U, Compare>::has_key (T _key){
+        Node * key = (this->TreeSearch(root, _key));
+        return pair<Node*, bool> (key,!(key->is_NIL(this)));
     }
 
-template <typename T, typename U, typename Compare>
-    void RBtree<T, U, Compare>::print() {
-        TreeWalk(root);
-        return;
-    }
 
 template <typename T, typename U , typename Compare>
     void RBtree<T, U, Compare>::LEFT_ROTATE (RBtree<T, U, Compare>::Node * x) {
@@ -268,7 +264,7 @@ template <typename T, typename U, typename Compare>
         if (y->colour == true) {
             RB_DELETE_FIXUP(x);
         }
-        return (void*)y;
+        return y;
     }
 
 
@@ -375,7 +371,7 @@ template <typename T , typename U, typename Compare>
 template <typename T , typename U, typename Compare>
      typename RBtree<T, U, Compare>::Node * RBtree<T, U, Compare>::TreeSearch (RBtree<T, U, Compare>::Node * x, T key){
         while  (!(x->is_NIL(this)) && key != (x->key)) {
-            if (key < x->key) {
+            if (comp(key ,x->key)) {
                    x = x->left;
             } else {
                 x = x->right;
