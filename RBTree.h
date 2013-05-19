@@ -1,9 +1,10 @@
 #ifndef RBTREE_H
 #define RBTREE_H
-
-template <typename T, typename U >
+#include <algorithm>
+template <typename T, typename U, typename Compare = std::less<T> >
 class RBtree
 {
+    Compare comp;
     struct Node;
     Node NIL;
     Node * root;
@@ -36,11 +37,11 @@ private:
     void * RB_DELETE (Node *);
     void RB_DELETE_FIXUP (Node *);
     void TreeWalk(Node*);
-    typename RBtree<T, U>::Node * TreeSuccessor(Node *);
-    typename RBtree<T, U>::Node * TreePredecessor(Node *);
-    typename RBtree<T, U>::Node * TreeMinimum (Node * x);
-    typename RBtree<T, U>::Node * TreeMaximum (Node *x);
-    typename RBtree<T, U>::Node * TreeSearch (Node * x , T key);
+    typename RBtree<T, U, Compare>::Node * TreeSuccessor(Node *);
+    typename RBtree<T, U, Compare>::Node * TreePredecessor(Node *);
+    typename RBtree<T, U, Compare>::Node * TreeMinimum (Node * x);
+    typename RBtree<T, U, Compare>::Node * TreeMaximum (Node *x);
+    typename RBtree<T, U, Compare>::Node * TreeSearch (Node * x , T key);
 public:
     class iterator;
     RBtree() {
@@ -64,29 +65,29 @@ public:
 
     void insert(std::pair<T, U> _pair);
     void erase (T key);
-    RBtree <T, U>::iterator begin();
-    RBtree <T, U>::iterator end();
+    RBtree <T, U, Compare >::iterator begin();
+    RBtree <T, U, Compare>::iterator end();
     bool has_key (T key);
     void print ();
     T min_key(){
-        return ((Node*)(this->TreeMinimum(root)))->key;
+        return (this->TreeMinimum(root))->key;
     }
     T max_key(){
-        return ((Node*)(this->TreeMaximum(root)))->key;
+        return (this->TreeMaximum(root))->key;
     }
 
 
 };
 
-template <typename T, typename U>
-    void RBtree<T, U>::insert(std::pair<T, U> _pair){
+template <typename T, typename U, typename Compare>
+    void RBtree<T, U, Compare>::insert(std::pair<T, U> _pair){
         Node * node = new Node(_pair.first, _pair.second);
         this->RB_INSERT(node);
         return;
     }
 
-template <typename T, typename U>
-    void RBtree<T, U>::erase (T _key){
+template <typename T, typename U, typename Compare>
+    void RBtree<T, U, Compare>::erase (T _key){
         Node * key = (Node*) (this->TreeSearch(root, _key));
         if (key ->is_NIL(this)) return;
         this->RB_DELETE(key);
@@ -94,20 +95,20 @@ template <typename T, typename U>
         return;
     }
 
-template <typename T, typename U>
-    bool RBtree<T, U>::has_key (T _key){
+template <typename T, typename U, typename Compare>
+    bool RBtree<T, U, Compare>::has_key (T _key){
         Node * key = (Node*)(this->TreeSearch(root, _key));
         return (!(key->is_NIL()));
     }
 
-template <typename T, typename U>
-    void RBtree<T, U>::print() {
+template <typename T, typename U, typename Compare>
+    void RBtree<T, U, Compare>::print() {
         TreeWalk(root);
         return;
     }
 
-template <typename T, typename U >
-    void RBtree<T, U>::LEFT_ROTATE (RBtree<T, U>::Node * x) {
+template <typename T, typename U , typename Compare>
+    void RBtree<T, U, Compare>::LEFT_ROTATE (RBtree<T, U, Compare>::Node * x) {
        Node* y = x->right;
        x->right = y->left;
        if(!y->left->is_NIL(this)) {
@@ -131,8 +132,8 @@ template <typename T, typename U >
        return;
     }
 
-template <typename T, typename U >
-    void RBtree<T,U>::RIGHT_ROTATE (RBtree<T, U>::Node * x) {
+template <typename T, typename U , typename Compare>
+    void RBtree<T,U, Compare>::RIGHT_ROTATE (RBtree<T, U, Compare>::Node * x) {
        Node* y = x->left;
        x->left = y->right;
 
@@ -156,13 +157,13 @@ template <typename T, typename U >
        return;
     }
 
-template <typename T , typename U>
-    void RBtree<T, U>::RB_INSERT(RBtree<T, U>::Node * z) {
+template <typename T , typename U, typename Compare>
+    void RBtree<T, U, Compare>::RB_INSERT(RBtree<T, U, Compare>::Node * z) {
         Node* y = &NIL;
         Node* x  = root;
         while (! x->is_NIL(this)){
             y = x;
-            if (z->key < x->key) {
+            if (comp(z->key, x->key)) {
                 x = x->left;
             } else {
                 x = x->right;
@@ -175,7 +176,7 @@ template <typename T , typename U>
             Node newNil(root);
             NIL = newNil;
         } else {
-            if (z->key < y->key) {
+            if (comp(z->key, y->key)) {
                 y->left = z;
             } else {
                 y->right = z;
@@ -189,8 +190,8 @@ template <typename T , typename U>
     }
 
 
-template <typename T, typename U >
-    void RBtree<T, U>::RB_INSERT_FIXUP (RBtree<T, U>::Node * z) {
+template <typename T, typename U, typename Compare >
+    void RBtree<T, U, Compare>::RB_INSERT_FIXUP (RBtree<T, U, Compare>::Node * z) {
         Node* y;
         while (((z->parent) -> colour) == false) {
             if (z->parent == (((z->parent)->parent) ->left)) {
@@ -234,8 +235,8 @@ template <typename T, typename U >
     }
 
 
-template <typename T, typename U>
-        void * RBtree<T, U>::RB_DELETE (RBtree<T, U>::Node * z) {
+template <typename T, typename U, typename Compare>
+        void * RBtree<T, U, Compare>::RB_DELETE (RBtree<T, U, Compare>::Node * z) {
         Node * y;
         Node * x;
         if (z->left->is_NIL(this) || z->right->is_NIL(this)) {
@@ -271,8 +272,8 @@ template <typename T, typename U>
     }
 
 
-template <typename T , typename U>
-    void RBtree<T, U>::RB_DELETE_FIXUP (RBtree<T, U>::Node * x) {
+template <typename T , typename U, typename Compare>
+    void RBtree<T, U, Compare>::RB_DELETE_FIXUP (RBtree<T, U, Compare>::Node * x) {
         Node * w;
         while ((x != root) && (x->colour == true)){
         if (x == x->parent->left) {
@@ -329,8 +330,8 @@ template <typename T , typename U>
     }
 
 
-template <typename T , typename U>
-     typename RBtree<T, U>::Node* RBtree<T, U>::TreeSuccessor(Node * x) {
+template <typename T , typename U, typename Compare>
+     typename RBtree<T, U, Compare>::Node* RBtree<T, U, Compare>::TreeSuccessor(Node * x) {
         if (!(x->right->is_NIL(this))) {
             return TreeMinimum(x->right);
         }
@@ -342,8 +343,8 @@ template <typename T , typename U>
         return y;
     }
 
-template <typename T , typename U>
-   typename RBtree<T, U>::Node * RBtree<T, U>::TreePredecessor(RBtree<T, U>::Node * x) {
+template <typename T , typename U, typename Compare>
+   typename RBtree<T, U, Compare>::Node * RBtree<T, U, Compare>::TreePredecessor(RBtree<T, U, Compare>::Node * x) {
         if (!(x->left->is_NIL(this))) {
             return TreeMaximum(x->left);
         }
@@ -355,24 +356,24 @@ template <typename T , typename U>
         return y;
     }
 
-template <typename T, typename U >
-    typename RBtree<T, U>::Node* RBtree<T, U>::TreeMinimum (RBtree<T, U>::Node * x) {
+template <typename T, typename U , typename Compare>
+    typename RBtree<T, U, Compare>::Node* RBtree<T, U, Compare>::TreeMinimum (RBtree<T, U, Compare>::Node * x) {
         while (!(x->left->is_NIL(this))) {
             x = x->left;
         }
         return x;
     }
 
-template <typename T , typename U>
-    typename RBtree<T, U>::Node * RBtree<T, U>::TreeMaximum (RBtree<T, U>::Node *x) {
+template <typename T , typename U, typename Compare>
+    typename RBtree<T, U, Compare>::Node * RBtree<T, U, Compare>::TreeMaximum (RBtree<T, U, Compare>::Node *x) {
         while (!(x->right->is_NIL(this))) {
                x = x->right;
         }
         return x;
     }
 
-template <typename T , typename U>
-     typename RBtree<T, U>::Node * RBtree<T, U>::TreeSearch (RBtree<T, U>::Node * x, T key){
+template <typename T , typename U, typename Compare>
+     typename RBtree<T, U, Compare>::Node * RBtree<T, U, Compare>::TreeSearch (RBtree<T, U, Compare>::Node * x, T key){
         while  (!(x->is_NIL(this)) && key != (x->key)) {
             if (key < x->key) {
                    x = x->left;
@@ -384,8 +385,8 @@ template <typename T , typename U>
     }
 
 
-template <typename T , typename U>
-     void RBtree<T, U>::TreeWalk(Node * x){
+template <typename T , typename U, typename Compare>
+     void RBtree<T, U, Compare>::TreeWalk(Node * x){
          if (!(x->is_NIL(this))) {
              TreeWalk(x->left);
              std::cout<<x->key<<' '<<x->value<<'\n';
@@ -393,17 +394,17 @@ template <typename T , typename U>
          }
      }
 
-template <typename T , typename U>
-     typename RBtree<T,U>::iterator RBtree<T,U>::begin()
+template <typename T , typename U, typename Compare>
+     typename RBtree<T,U, Compare>::iterator RBtree<T,U, Compare>::begin()
      {
-         RBtree<T, U>::Node * current = this->TreeMinimum(this->root);
+         RBtree<T, U, Compare>::Node * current = this->TreeMinimum(this->root);
          iterator it(current, this);
          return it;
      }
 
 
-template <typename T , typename U>
-    typename  RBtree<T,U>::iterator RBtree<T,U>::end()
+template <typename T , typename U, typename Compare>
+    typename  RBtree<T,U, Compare>::iterator RBtree<T,U, Compare>::end()
      {
 
          iterator it(&(this->NIL) , this);
@@ -411,13 +412,13 @@ template <typename T , typename U>
      }
 
 
-template <typename T, typename U>
-     class RBtree<T, U>::iterator{
-         RBtree<T, U> *tree;
-         RBtree<T, U>::Node * current;
+template <typename T, typename U, typename Compare>
+     class RBtree<T, U, Compare>::iterator{
+         RBtree<T, U, Compare> *tree;
+         RBtree<T, U, Compare>::Node * current;
 
      public:
-         iterator (RBtree<T, U>::Node *_current = 0, RBtree<T, U> *_tree  = 0):current(_current), tree(_tree){}
+         iterator (RBtree<T, U, Compare>::Node *_current = 0, RBtree<T, U, Compare> *_tree  = 0):current(_current), tree(_tree){}
          bool operator !=(const iterator & other)
          {
              return (current != other.current || tree != other.tree);
