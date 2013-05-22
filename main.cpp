@@ -55,7 +55,8 @@ int main()
     for (itr1 = A.cbegin(); itr1 != A.cend(); ++itr1) {
         cout<<(*itr1).first<<" "<<(*itr1).second<<'\n';
     }
-
+    cout<<'\n';
+    cout<<(*A.find(12)).first<<" "<<(*A.find(12)).second<<'\n';
     //A.erase(1);
    // A.print();
     //int c;
