@@ -1,6 +1,8 @@
 #include <iostream>
 #include "RBTree.h"
 #include <list>
+#include<typeinfo>
+#include<iterator>
 using namespace std;
 
 int main()
@@ -61,6 +63,10 @@ int main()
    // A.print();
     //int c;
   //  cin>>c;
+
+    typedef std::iterator_traits<RBtree<int, int, greater<int> > ::iterator> traits;
+    if (typeid(traits::iterator_category)==typeid(std::forward_iterator_tag))
+      std::cout << "forward";
     return 0;
 }
 

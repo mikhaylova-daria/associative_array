@@ -35,7 +35,7 @@ private:
     void RIGHT_ROTATE (Node *);
     void RB_INSERT (Node *);
     void RB_INSERT_FIXUP (Node *);
-    void * RB_DELETE (Node *);
+    Node* RB_DELETE (Node *);
     void RB_DELETE_FIXUP (Node *);
     void TreeWalk(Node*) const;
     typename RBtree<T, U, Compare>::Node * TreeSuccessor(Node *) const;
@@ -280,7 +280,7 @@ template <typename T, typename U, typename Compare >
 
 
 template <typename T, typename U, typename Compare>
-        void * RBtree<T, U, Compare>::RB_DELETE (RBtree<T, U, Compare>::Node * z) {
+       typename RBtree<T, U, Compare>::Node * RBtree<T, U, Compare>::RB_DELETE (RBtree<T, U, Compare>::Node * z) {
         Node * y;
         Node * x;
         if (z->left->is_NIL(this) || z->right->is_NIL(this)) {
@@ -473,10 +473,15 @@ template <typename T , typename U, typename Compare>
           }
 
 template <typename T, typename U, typename Compare>
-     class RBtree<T, U, Compare>::iterator{
+     class RBtree<T, U, Compare>::iterator : public std::iterator<std::forward_iterator_tag, RBtree<T, U, Compare> >{
          RBtree<T, U, Compare> *tree;
          RBtree<T, U, Compare>::Node * current;
+         struct forward_iterator_tag: public input_iterator_tag {};
+         //template <class RBtree<T, U, Compare> >
+         inline RBtree <T, U, Compare >* value_type(const RBtree<T, U, Compare> *) { return ( RBtree<T, U, Compare> *) (0); }
 
+         //template <class RBtree<T, U, Compare> >
+         inline ptrdiff_t* distance_type(const RBtree<T, U, Compare> *) { return (ptrdiff_t*) (0); }
      public:
          friend class RBtree<T, U, Compare>;
          iterator (RBtree<T, U, Compare>::Node *_current = 0, RBtree<T, U, Compare> *_tree  = 0):current(_current), tree(_tree){}
@@ -493,10 +498,12 @@ template <typename T, typename U, typename Compare>
                 current = tree->TreeSuccessor(current);
                 if (current->is_NIL(tree)){
                     iterator itr(&(tree->NIL), tree);
-                    return itr;
+                    (*this) = itr;
+                    return (*this);
                 } else {
                     iterator itr(current, tree);
-                    return itr;
+                    (*this) = itr;
+                    return (*this);
                 }
 
           }
@@ -512,11 +519,12 @@ template <typename T, typename U, typename Compare>
      };
 
      template <typename T, typename U, typename Compare>
-          class RBtree<T, U, Compare>::const_iterator{
+         class RBtree<T, U, Compare>::const_iterator:public std::iterator<std::forward_iterator_tag, RBtree<T, U, Compare> >{
               RBtree<T, U, Compare> *tree;
-              RBtree<T, U, Compare>::Node * current;
+              RBtree<T, U, Compare>::Node* current;
 
           public:
+              struct forward_iterator_tag: public input_iterator_tag {};
               friend class RBtree<T, U, Compare>;
               const_iterator (RBtree<T, U, Compare>::Node *_current = 0, RBtree<T, U, Compare> *_tree  = 0):current(_current), tree(_tree){}
               bool operator !=(const const_iterator & other)
@@ -532,10 +540,12 @@ template <typename T, typename U, typename Compare>
                      current = tree->TreeSuccessor(current);
                      if (current->is_NIL(tree)){
                          const_iterator itr(&(tree->NIL), tree);
-                         return itr;
+                         (*this) = itr;
+                         return (*this);
                      } else {
                          const_iterator itr(current, tree);
-                         return itr;
+                         (*this) = itr;
+                         return (*this);
                      }
 
                }
