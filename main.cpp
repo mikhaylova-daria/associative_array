@@ -57,10 +57,22 @@ int main()
     for (itr1 = A.cbegin(); itr1 != A.cend(); itr1++) {
         cout<<itr1->first<<" "<<itr1->second<<'\n';
     }
-    cout<<A[5].second<<"\n";
-    A[5].second =7;
+    cout<<A[5]<<"\n";
+    A[5] = 7;
+    cout<<A[5]<<'\n';
     cout<<(*A.find(12)).first<<" "<<(*A.find(12)).second<<'\n';
-    cout << "!"<<A.at(4);
+    cout <<A.at(31)<<"\n";
+    swap(A, B);
+   // A=B;
+   // RBtree<int, int, greater<int> > C(A);
+    for (itr1 = A.cbegin(); itr1 != A.cend(); itr1++) {
+        cout<<itr1->first<<" "<<itr1->second<<'\n';
+    }
+    cout<<" \n\n";
+    for (itr1 = B.cbegin(); itr1 != B.cend(); itr1++) {
+        cout<<itr1->first<<" "<<itr1->second<<'\n';
+    }
+
     //A.erase(1);
    // A.print();
     //int c;
