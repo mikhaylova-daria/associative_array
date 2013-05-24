@@ -1,6 +1,7 @@
 #ifndef RBTREE_H
 #define RBTREE_H
 #include <algorithm>
+#include <set>
 using namespace std;
 template <typename T, typename U, typename Compare = std::less<T> >
 class RBtree
@@ -498,9 +499,17 @@ template <typename T, typename U, typename Compare>
      class RBtree<T, U, Compare>::iterator: public std::iterator<std::forward_iterator_tag, RBtree<T, U, Compare> >{
          RBtree<T, U, Compare> *tree;
          RBtree<T, U, Compare>::Node * current;
+         std::set<pair < const T, U&>* >  pointer_for_deleting;
      public:
          friend class RBtree<T, U, Compare>;
          iterator (RBtree<T, U, Compare>::Node *_current = 0, RBtree<T, U, Compare> *_tree  = 0):current(_current), tree(_tree){}
+         ~iterator(){
+             typename set<pair <const T, U&>* >::iterator itr;
+             itr = pointer_for_deleting.begin();
+             for(; itr != pointer_for_deleting.end();++itr){
+                 delete(*itr);
+             }
+         }
          bool operator !=(const iterator & other)
          {
              return (current != other.current || tree != other.tree);
@@ -531,6 +540,12 @@ template <typename T, typename U, typename Compare>
              return answer;
          }
 
+         const std::pair<const T,  U&>* operator->(){
+            std::pair <const T,  U&>* answer;
+             answer = new pair <const T,  U&> (current->key, current->value);
+             pointer_for_deleting.insert(answer);
+             return answer;
+         }
 
      };
 
@@ -538,19 +553,29 @@ template <typename T, typename U, typename Compare>
          class RBtree<T, U, Compare>::const_iterator:public std::iterator<std::forward_iterator_tag, RBtree<T, U, Compare> >{
               RBtree<T, U, Compare> *tree;
               RBtree<T, U, Compare>::Node* current;
-
+              std::set<pair <const T,const U>* >  pointer_for_deleting;
           public:
-              struct forward_iterator_tag: public input_iterator_tag {};
               friend class RBtree<T, U, Compare>;
               const_iterator (RBtree<T, U, Compare>::Node *_current = 0, RBtree<T, U, Compare> *_tree  = 0):current(_current), tree(_tree){}
+
+              ~const_iterator(){
+                  typename set<pair <const T,const U>* >::iterator itr;
+                  itr = pointer_for_deleting.begin();
+                  for(; itr != pointer_for_deleting.end();++itr){
+                      delete(*itr);
+                  }
+              }
+
               bool operator !=(const const_iterator & other)
               {
                   return (current != other.current || tree != other.tree);
               }
+
               bool operator ==(const const_iterator & other)
               {
                   return (current == other.current && tree == other.tree);
               }
+
               const_iterator & operator++(){
               {
                      current = tree->TreeSuccessor(current);
@@ -575,10 +600,10 @@ template <typename T, typename U, typename Compare>
               }
 
               const std::pair<const T, const U>* operator->(){
-                  //std::pair<T, U> answer;
-                  //answer.first = current->key;
-                 // answer.second = current->value;
-                  return (&&(this->operator *()));
+                 std::pair <const T, const U>* answer;
+                  answer = new pair <const T, const U> (current->key, current->value);
+                  pointer_for_deleting.insert(answer);
+                  return answer;
               }
 
 

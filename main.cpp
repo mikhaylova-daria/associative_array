@@ -38,7 +38,7 @@ int main()
     (*itr).second = 6;// изменит значение
 
     for (itr = A.begin(); itr!= A.end(); ++itr) {
-        cout<<(*itr).first<<" "<<(*itr).second<<'\n';
+        cout<<itr->first<<" "<<itr->second<<'\n';
     }
 
     RBtree<int, int, greater<int> >::const_iterator itr1;
@@ -55,7 +55,7 @@ int main()
    // (*itr1).second = 6; //даст ошибку компиляции, как и положено
 
     for (itr1 = A.cbegin(); itr1 != A.cend(); ++itr1) {
-        cout<<itr1->first<<" "<<(*itr1).second<<'\n';
+        cout<<itr1->first<<" "<<itr1->second<<'\n';
     }
     cout<<A[5].second<<"\n";
     A[5].second =7;
