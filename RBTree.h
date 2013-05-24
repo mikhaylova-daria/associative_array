@@ -473,15 +473,9 @@ template <typename T , typename U, typename Compare>
           }
 
 template <typename T, typename U, typename Compare>
-     class RBtree<T, U, Compare>::iterator : public std::iterator<std::forward_iterator_tag, RBtree<T, U, Compare> >{
+     class RBtree<T, U, Compare>::iterator: public std::iterator<std::forward_iterator_tag, RBtree<T, U, Compare> >{
          RBtree<T, U, Compare> *tree;
          RBtree<T, U, Compare>::Node * current;
-         struct forward_iterator_tag: public input_iterator_tag {};
-         //template <class RBtree<T, U, Compare> >
-         inline RBtree <T, U, Compare >* value_type(const RBtree<T, U, Compare> *) { return ( RBtree<T, U, Compare> *) (0); }
-
-         //template <class RBtree<T, U, Compare> >
-         inline ptrdiff_t* distance_type(const RBtree<T, U, Compare> *) { return (ptrdiff_t*) (0); }
      public:
          friend class RBtree<T, U, Compare>;
          iterator (RBtree<T, U, Compare>::Node *_current = 0, RBtree<T, U, Compare> *_tree  = 0):current(_current), tree(_tree){}
@@ -557,6 +551,8 @@ template <typename T, typename U, typename Compare>
                   answer.second = current->value;
                   return answer;
               }
+
+
           };
 
 
