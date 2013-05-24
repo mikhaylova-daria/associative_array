@@ -60,6 +60,7 @@ int main()
     cout<<A[5].second<<"\n";
     A[5].second =7;
     cout<<(*A.find(12)).first<<" "<<(*A.find(12)).second<<'\n';
+    cout << "!"<<A.at(4);
     //A.erase(1);
    // A.print();
     //int c;
