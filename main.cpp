@@ -54,7 +54,7 @@ int main()
     itr1 = A.cbegin();
    // (*itr1).second = 6; //даст ошибку компиляции, как и положено
 
-    for (itr1 = A.cbegin(); itr1 != A.cend(); ++itr1) {
+    for (itr1 = A.cbegin(); itr1 != A.cend(); itr1++) {
         cout<<itr1->first<<" "<<itr1->second<<'\n';
     }
     cout<<A[5].second<<"\n";

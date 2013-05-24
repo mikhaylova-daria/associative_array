@@ -560,6 +560,21 @@ template <typename T, typename U, typename Compare>
 
           }
         }
+         iterator & operator++(int)
+         {
+                current = tree->TreeSuccessor(current);
+                if (current->is_NIL(tree)){
+                    iterator itr(&(tree->NIL), tree);
+                    (*this) = itr;
+                    return (*this);
+                } else {
+                    iterator itr(current, tree);
+                    (*this) = itr;
+                    return (*this);
+                }
+
+          }
+
 
 
          std::pair<const T, U&>  operator*(){
@@ -618,6 +633,22 @@ template <typename T, typename U, typename Compare>
 
                }
              }
+
+              const_iterator & operator++(int)
+              {
+                     current = tree->TreeSuccessor(current);
+                     if (current->is_NIL(tree)){
+                         const_iterator itr(&(tree->NIL), tree);
+                         (*this) = itr;
+                         return (*this);
+                     } else {
+                         const_iterator itr(current, tree);
+                         (*this) = itr;
+                         return (*this);
+                     }
+
+               }
+
 
               const std::pair<const T, const U> operator*(){
                   std::pair<T, U> answer;
