@@ -78,6 +78,8 @@ public:
     RBtree <T, U, Compare>::const_iterator cend() ;
     RBtree <T, U, Compare>::iterator find(const T & _key);
     RBtree <T, U, Compare>::const_iterator find(const T & _key) const;
+    std::pair <const T, U&> operator [](int);
+    std::pair<const T, const U> operator [](int) const;
     void erase (iterator itr);
 
 };
@@ -472,6 +474,26 @@ template <typename T , typename U, typename Compare>
               return it;
           }
 
+template <typename T , typename U, typename Compare>
+        std::pair <const T, U&> RBtree<T,U, Compare>::operator [](int _i){
+            RBtree<T,U, Compare>::iterator itr;
+            itr = this->begin();
+            for (int i = 0; i <_i ;++i){
+                ++itr;
+            }
+            return (*itr);
+        }
+
+template <typename T , typename U, typename Compare>
+          std::pair <const T, const U> RBtree<T,U, Compare>::operator [](int _i) const{
+                RBtree<T,U, Compare>::const_iterator itr;
+                  itr = this->cbegin();
+                  for (int i = 0; i <_i ;++i){
+                      ++itr;
+                  }
+                   return (*itr);
+               }
+
 template <typename T, typename U, typename Compare>
      class RBtree<T, U, Compare>::iterator: public std::iterator<std::forward_iterator_tag, RBtree<T, U, Compare> >{
          RBtree<T, U, Compare> *tree;
@@ -550,6 +572,13 @@ template <typename T, typename U, typename Compare>
                   answer.first = current->key;
                   answer.second = current->value;
                   return answer;
+              }
+
+              const std::pair<const T, const U>* operator->(){
+                  //std::pair<T, U> answer;
+                  //answer.first = current->key;
+                 // answer.second = current->value;
+                  return (&&(this->operator *()));
               }
 
 

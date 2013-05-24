@@ -55,18 +55,18 @@ int main()
    // (*itr1).second = 6; //даст ошибку компиляции, как и положено
 
     for (itr1 = A.cbegin(); itr1 != A.cend(); ++itr1) {
-        cout<<(*itr1).first<<" "<<(*itr1).second<<'\n';
+        cout<<itr1->first<<" "<<(*itr1).second<<'\n';
     }
-    cout<<'\n';
+    cout<<A[5].second<<"\n";
+    A[5].second =7;
     cout<<(*A.find(12)).first<<" "<<(*A.find(12)).second<<'\n';
     //A.erase(1);
    // A.print();
     //int c;
   //  cin>>c;
+    //swap();
 
-    typedef std::iterator_traits<RBtree<int, int, greater<int> > ::iterator> traits;
-    if (typeid(traits::iterator_category)==typeid(std::forward_iterator_tag))
-      std::cout << "forward";
+
     return 0;
 }
 
